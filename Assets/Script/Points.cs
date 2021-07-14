@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+public class Dicelol
+{
+    public int dicepoint = 0;
+    public bool passiple = false;
+}
+
+
 public class Points : MonoBehaviour
 {
 
@@ -72,6 +80,17 @@ public class Points : MonoBehaviour
 
 
     }
+
+
+
+
+  
+
+
+
+
+
+
 
     public void debug()
     {
