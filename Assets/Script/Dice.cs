@@ -33,7 +33,7 @@ public class Dice : MonoBehaviour
 
     private List<Animator> m_diceanis = new List<Animator>();
     private List<Button> m_buttons = new List<Button>();
-    private Text m_cuptext;
+    private Text[] m_cuptext = new Text[2];
     private bool m_dicelock = false;
     private bool m_dicerolling = false;
     private AudioSource m_sound;
@@ -55,7 +55,7 @@ public class Dice : MonoBehaviour
         m_rollcount = 3;
         m_dicelock = false;
         m_dicerolling = false;
-        m_cuptext.text = m_rollcount.ToString();
+        LeftTexting(m_rollcount.ToString() + " Left");
     }
 
     public Animator Ani(int idx)
@@ -66,14 +66,23 @@ public class Dice : MonoBehaviour
         return null;
     }
 
+    private void LeftTexting(string val)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            m_cuptext[i].text = val;
+        }
+    }
+
     private void init()
     {
         m_diceanis.AddRange(GetComponentsInChildren<Animator>(true));
         m_buttons.AddRange(GetComponentsInChildren<Button>(true));
-        m_cuptext = m_buttons[5].GetComponentInChildren<Text>(true);
+        
+        m_cuptext = transform.Find("Left").GetComponentsInChildren<Text>(true);
         m_buttons[5].onClick.AddListener(DiceRoll);
         m_sound = m_buttons[5].GetComponentInChildren<AudioSource>(true);
-        m_cuptext.text = "3";
+        LeftTexting("3 Left");
 
         for (int i = 0; i < 5; i++)
         {
@@ -121,6 +130,11 @@ public class Dice : MonoBehaviour
     }
 
 
+    public void DiceShake()
+    {
+
+    }
+
     public void DiceRoll()
     {
 
@@ -157,8 +171,7 @@ public class Dice : MonoBehaviour
             m_sound.gameObject.SetActive(true);
 
         m_rollcount--;
-        m_cuptext.text = m_rollcount.ToString();
-
+        LeftTexting(m_rollcount.ToString() + " Left");
      
     }
 
@@ -197,7 +210,5 @@ public class Dice : MonoBehaviour
 
 
     }
-
-
 
 }
