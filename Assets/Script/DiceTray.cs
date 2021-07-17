@@ -70,10 +70,24 @@ public class DiceTray : MonoBehaviour
 
     private void Buttonfunc(int idx)
     {
+        if (TurnMng.instance.Gameend)
+            return;
+
         m_trays[idx].m_ani.gameObject.SetActive(false);
         Dice.instance.Ani(m_trays[idx].m_diceidx).gameObject.SetActive(true);
         Dice.instance.Ani(m_trays[idx].m_diceidx).SetInteger("Diceroll", Dice.instance.dice(m_trays[idx].m_diceidx));
         m_trays[idx].m_diceidx = -1;
     }
 
+
+    public void EmptyTray()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            m_trays[i].m_ani.gameObject.SetActive(false);
+            Dice.instance.Ani(i).gameObject.SetActive(true);
+            Dice.instance.Ani(i).SetInteger("Diceroll", 7);
+            m_trays[i].m_diceidx = -1;
+        }
+    }
 }

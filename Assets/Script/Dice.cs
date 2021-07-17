@@ -35,8 +35,28 @@ public class Dice : MonoBehaviour
     private List<Button> m_buttons = new List<Button>();
     private Text m_cuptext;
     private bool m_dicelock = false;
+    private bool m_dicerolling = false;
     private AudioSource m_sound;
     private int m_rollcount = 3;
+
+    public int Rollcount
+    {
+        get { return m_rollcount; }
+    }
+
+    public bool DiceRolling
+    {
+        get { return m_dicerolling; }
+    }
+
+
+    public void ResetRollcout()
+    {
+        m_rollcount = 3;
+        m_dicelock = false;
+        m_dicerolling = false;
+        m_cuptext.text = m_rollcount.ToString();
+    }
 
     public Animator Ani(int idx)
     {
@@ -74,9 +94,17 @@ public class Dice : MonoBehaviour
         return m_dice[idx];
     }
 
+    public void dicezero()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            m_dice[i] = 0;
+        }
+    }
+
     private void DiceButtonfunc(int idx)
     {
-        if (m_dice[idx] < 0)
+        if (m_dice[idx] <= 0)
             return;
 
         for (int i = 0; i < 5; i++)
@@ -95,6 +123,10 @@ public class Dice : MonoBehaviour
 
     public void DiceRoll()
     {
+
+        if (TurnMng.instance.Gameend)
+            return;
+
         if (m_dicelock)
             return;
 
@@ -114,7 +146,7 @@ public class Dice : MonoBehaviour
             if (!m_diceanis[i].gameObject.activeInHierarchy)
                 continue;
 
-            m_dice[i] = Random.Range(1, 6);
+            m_dice[i] = Random.Range(1, 7);
 
             m_diceanis[i].SetInteger("Diceroll", -1);
 
@@ -127,8 +159,7 @@ public class Dice : MonoBehaviour
         m_rollcount--;
         m_cuptext.text = m_rollcount.ToString();
 
-        Points.instance.Check();
-
+     
     }
 
 
@@ -136,7 +167,7 @@ public class Dice : MonoBehaviour
     {
         float elapsedtime = 0;
         bool stop = false;
-
+        m_dicerolling = true;
         while(!stop)
         {
             elapsedtime += Time.deltaTime;
@@ -145,7 +176,10 @@ public class Dice : MonoBehaviour
             {
                 stop = true;
                 m_diceanis[idx].SetInteger("Diceroll", m_dice[idx]);
+                m_dicerolling = false;
+                Points.instance.Check();
             }
+
             yield return null;
         }
 
@@ -156,6 +190,7 @@ public class Dice : MonoBehaviour
 
             if (m_rollcount <= 0)
                 m_dicelock = true;
+            
         }
 
         yield return null;
