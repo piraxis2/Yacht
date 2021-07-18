@@ -36,8 +36,11 @@ public class Dice : MonoBehaviour
     private Text[] m_cuptext = new Text[2];
     private bool m_dicelock = false;
     private bool m_dicerolling = false;
+    private bool m_cupon = false;
+
     private AudioSource m_sound;
     private int m_rollcount = 3;
+    private UIFolder m_Cup;
 
     public int Rollcount
     {
@@ -47,6 +50,11 @@ public class Dice : MonoBehaviour
     public bool DiceRolling
     {
         get { return m_dicerolling; }
+    }
+
+    public bool Cupon
+    {
+        get { return m_cupon; }
     }
 
 
@@ -80,9 +88,11 @@ public class Dice : MonoBehaviour
         m_buttons.AddRange(GetComponentsInChildren<Button>(true));
         
         m_cuptext = transform.Find("Left").GetComponentsInChildren<Text>(true);
-        m_buttons[5].onClick.AddListener(DiceRoll);
         m_sound = m_buttons[5].GetComponentInChildren<AudioSource>(true);
         LeftTexting("3 Left");
+        m_Cup = GetComponentInChildren<UIFolder>();
+        m_Cup.Init();
+        m_buttons[5].onClick.AddListener(() => { CupSwitch(); });
 
         for (int i = 0; i < 5; i++)
         {
@@ -111,6 +121,13 @@ public class Dice : MonoBehaviour
         }
     }
 
+    public void CupSwitch()
+    {
+        m_Cup.MoveFolder();
+        m_cupon = !m_cupon;
+
+    }
+
     private void DiceButtonfunc(int idx)
     {
         if (m_dice[idx] <= 0)
@@ -133,6 +150,11 @@ public class Dice : MonoBehaviour
     public void DiceShake()
     {
 
+        if (m_cupon)
+        {
+            DiceRoll();
+            CupSwitch();
+        }
     }
 
     public void DiceRoll()
@@ -185,7 +207,7 @@ public class Dice : MonoBehaviour
         {
             elapsedtime += Time.deltaTime;
 
-            if (elapsedtime > 0.35f)
+            if (elapsedtime > 0.8f)
             {
                 stop = true;
                 m_diceanis[idx].SetInteger("Diceroll", m_dice[idx]);

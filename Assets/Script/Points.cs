@@ -39,6 +39,8 @@ public class Points : MonoBehaviour
     private List<Seteddice>[] m_seteddices = new List<Seteddice>[2];
     private List<Button>[] m_buttons = new List<Button>[2];
 
+    private Transform[] m_backimage = new Transform[2];
+
     private Vector3 m_oripos;
     private Vector3 m_orisize;
     private int m_currturncount = 0;
@@ -86,6 +88,9 @@ public class Points : MonoBehaviour
 
         m_restartbutton = transform.Find("Restart").GetComponent<Button>();
         m_restartbutton.onClick.AddListener(() => Restart());
+
+        m_backimage[0] = transform.Find("1P");
+        m_backimage[1] = transform.Find("2P");
     }
 
 
@@ -379,6 +384,9 @@ public class Points : MonoBehaviour
         SumPoints();
 
         TurnMng.instance.ChangeTurn();
+        m_backimage[0].gameObject.SetActive(!TurnMng.instance.boolturn);
+        m_backimage[1].gameObject.SetActive(TurnMng.instance.boolturn);
+
 
 
 

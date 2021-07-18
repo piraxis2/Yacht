@@ -7,19 +7,33 @@ public class ShakeInput : MonoBehaviour
     float accelerometerUpdateInterval = 1.0f / 60.0f;
     // The greater the value of LowPassKernelWidthInSeconds, the slower the
     // filtered value will converge towards current input sample (and vice versa).
-    float lowPassKernelWidthInSeconds = 1.0f;
+    float lowPassKernelWidthInSeconds = 2.0f;
     // This next parameter is initialized to 2.0 per Apple's recommendation,
     // or at least according to Brady! ;)
-    float shakeDetectionThreshold = 2.0f;
+    float shakeDetectionThreshold = 1f;
 
     float lowPassFilterFactor;
     Vector3 lowPassValue;
+
+    bool m_shaking = false;
+
+    float m_elapsedtime = 0;
+    float m_targettime = 0.1f;
+
+    AudioSource[] m_sound = new AudioSource[2];
+
+    void EndShake()
+    {
+        Dice.instance.DiceShake();
+    }
 
     void Start()
     {
         lowPassFilterFactor = accelerometerUpdateInterval / lowPassKernelWidthInSeconds;
         shakeDetectionThreshold *= shakeDetectionThreshold;
         lowPassValue = Input.acceleration;
+        m_sound = GetComponentsInChildren<AudioSource>(true);
+
     }
 
     void Update()
@@ -30,7 +44,22 @@ public class ShakeInput : MonoBehaviour
 
         if (deltaAcceleration.sqrMagnitude >= shakeDetectionThreshold)
         {
+            m_shaking = true;
+            m_elapsedtime = 0;
+            if (Dice.instance.Cupon && Dice.instance.Rollcount > 0)
+            { m_sound[0].gameObject.SetActive(true); }
+        }
 
+        if (m_shaking)
+        {
+            m_elapsedtime += Time.deltaTime;
+            if (m_elapsedtime >= m_targettime)
+            {
+                m_sound[0].gameObject.SetActive(false);
+                m_shaking = false;
+                m_elapsedtime = 0;
+                EndShake();
+            }
         }
     }
 }
